@@ -66,7 +66,7 @@ export const Modal = ({ setShowModal }) => {
                     </div>
                     <p>
                         Unlike Wordle, this game does not highlight letters that
-                        are in the word but in the the wrong spot or letters
+                        are in the word but in the wrong spot or letters
                         that are not in the word at all.
                     </p>
                     <p>
