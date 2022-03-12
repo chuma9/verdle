@@ -8,89 +8,67 @@ import { Header } from "./Header";
 import { GameContext } from "../context/GameContext";
 import { solutions } from "../context/solutions";
 import { vocab } from "../context/vocab";
+import {
+    loadGameStateFromLocalStorage,
+    saveGameStateToLocalStorage,
+} from "../lib/localStorage";
 
 export const Game = () => {
     const [context, setContext] = useContext(GameContext);
     const [shake, setShake] = useState<boolean>(false);
     const [keyPressed, setKeyPressed] = useState<string>("");
+    const [localStorageUpdateTrigger, setLocalStorageUpdateTrigger] =
+        useState<boolean>(false);
 
-    function setGameArray(array) {
+    const setGameArray = (array) => {
         setContext((context) => ({ ...context, gameArray: array }));
-    }
+    };
 
-    function setLetterSelected(letter) {
+    const setLetterSelected = (letter) => {
         setContext((context) => ({ ...context, letterSelected: letter }));
-    }
+    };
 
-    function setCellSelected(cell) {
+    const setCellSelected = (cell) => {
         setContext((context) => ({ ...context, cellSelected: cell }));
-    }
+    };
 
-    function setSolution(solution) {
+    const setSolution = (solution) => {
         setContext((context) => ({ ...context, solution: solution }));
-    }
+    };
 
-    function setWon(won) {
+    const setWon = (won) => {
         setContext((context) => ({ ...context, won: won }));
-    }
+    };
 
-    function setPuzzleNumber(number) {
-        setContext((context) => ({ ...context, puzzleNumber: number }));
-    }
-
-    function setShouldHighlight(shouldHighlight) {
+    const setShouldHighlight = (shouldHighlight) => {
         setContext((context) => ({
             ...context,
             shouldHighlight: shouldHighlight,
         }));
-    }
+    };
 
-    function setcorrectLettersIndices(indices) {
+    const setcorrectLettersIndices = (indices) => {
         setContext((context) => ({
             ...context,
             correctLettersIndices: indices,
         }));
-    }
+    };
 
     const createNewGame = () => {
-        const emptyGame = [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-        ];
+        const loaded = loadGameStateFromLocalStorage();
+        const puzzleNumber = getPuzzleNumber();
 
-        setGameArray(emptyGame);
+        setContext((context) => ({ ...context, puzzleNumber: puzzleNumber }));
         setLetterSelected("");
-        setCellSelected(0);
-        setSolution(getSolution());
-        setWon(false);
+        setSolution(getSolution(puzzleNumber));
+
+        if (loaded?.puzzleNumber === puzzleNumber) {
+            // restore game
+            setGameArray(loaded.gameArray);
+            setCellSelected(loaded.cellSelected);
+            setWon(loaded.won);
+            setcorrectLettersIndices(loaded.correctLettersIndices);
+        }
     };
 
     const wordLength = 5;
@@ -112,7 +90,11 @@ export const Game = () => {
         return row * wordLength;
     };
 
-    const getSolution = () => {
+    const getSolution = (puzzleNumber) => {
+        return solutions[puzzleNumber - 1];
+    };
+
+    const getPuzzleNumber = () => {
         const start = DateTime.local(2022, 2, 6, 0, 0);
         const dayInterval = Interval.fromDateTimes(
             start,
@@ -120,9 +102,7 @@ export const Game = () => {
         ).length("days");
 
         const solutionIdx = Math.floor(dayInterval) % solutions.length;
-        setPuzzleNumber(solutionIdx + 1);
-
-        return solutions[solutionIdx];
+        return solutionIdx + 1;
     };
 
     const setLetter = (index: number, letter: string) => {
@@ -208,6 +188,7 @@ export const Game = () => {
         }
 
         setShouldHighlight(false);
+        setLocalStorageUpdateTrigger(!localStorageUpdateTrigger);
 
         if (isSolved(rowStart)) {
             setWon(true);
@@ -285,6 +266,22 @@ export const Game = () => {
     useEffect(() => {
         createNewGame();
     }, []);
+
+    useEffect(() => {
+        const gameArray = context.gameArray;
+        const puzzleNumber = context.puzzleNumber;
+        const cellSelected = context.cellSelected;
+        const won = context.won;
+        const correctLettersIndices = context.correctLettersIndices;
+
+        saveGameStateToLocalStorage({
+            gameArray,
+            puzzleNumber,
+            cellSelected,
+            won,
+            correctLettersIndices,
+        });
+    }, [localStorageUpdateTrigger]);
 
     useEffect(() => {
         if (keyPressed && !context.won) {
