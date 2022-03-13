@@ -34,6 +34,21 @@ const GameProvider = ({ children }) => {
         "",
         "",
         "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
     ];
 
     const [context, setContext] = useState({

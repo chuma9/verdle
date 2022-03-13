@@ -86,7 +86,7 @@ button#help {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    max-width: 330px;
+    max-width: 220px;
     width: 100%;
     padding-bottom: 10px;
 }
