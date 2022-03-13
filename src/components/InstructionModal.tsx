@@ -11,7 +11,7 @@ export const Modal = ({ setShowModal }) => {
                 <h2>HOW TO PLAY</h2>
                 <div className="instructions">
                     <p>
-                        Guess the <strong>VERDLE</strong> in 6 tries.
+                        Guess the <strong>VERDLE</strong> in 9 tries.
                     </p>
                     <p>
                         Each guess must be a valid 5 letter word. Hit the enter
