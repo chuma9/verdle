@@ -30,7 +30,7 @@ export const Header = () => {
         }
 
         const attempts = context.won ? rowsGuessed : "X";
-        return `Verdle #${context.puzzleNumber}  ${attempts}/6\n` + shareGrid;
+        return `Verdle #${context.puzzleNumber}  ${attempts}/9\n` + shareGrid;
     };
 
     const copyToClipboard = () => {
